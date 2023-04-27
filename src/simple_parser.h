@@ -58,6 +58,10 @@ private:
   bool base_rvalue();
   void var_rvalue();
 
+  void switch_stmt();
+  void case_stmt();
+  void default_stmt();
+
   
 };
 

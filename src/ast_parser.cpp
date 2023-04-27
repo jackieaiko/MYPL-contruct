@@ -559,3 +559,20 @@ void ASTParser::var_rvalue(std::vector<VarRef>& p)
     }
   }
 }
+
+
+// switch statements
+void ASTParser::switch_stmt(SwitchStmt& s)
+{
+
+}
+
+void ASTParser::case_stmt(CaseStmt& s)
+{
+
+}
+
+void ASTParser::default_stmt(DefaultStmt& s)
+{
+
+}

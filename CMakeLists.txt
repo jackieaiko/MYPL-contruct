@@ -16,7 +16,8 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 
 add_executable(project_tests tests/project_tests.cpp
-  src/token.cpp src/mypl_exception.cpp src/lexer.cpp src/ast_parser.cpp
+  src/token.cpp src/mypl_exception.cpp src/lexer.cpp src/simple_parser.cpp 
+  src/ast_parser.cpp src/symbol_table.cpp src/semantic_checker.cpp 
   src/vm.cpp src/vm_instr.cpp src/var_table.cpp src/code_generator)
 target_link_libraries(project_tests ${GTEST_LIBRARIES} pthread)
 

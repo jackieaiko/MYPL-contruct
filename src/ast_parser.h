@@ -61,6 +61,10 @@ private:
   void base_rvalue(SimpleRValue& s);
   void var_rvalue(std::vector<VarRef>& p);
 
+  void switch_stmt(SwitchStmt& s);
+  void case_stmt(CaseStmt& S);
+  void default_stmt(DefaultStmt& s);
+
 };
 
 

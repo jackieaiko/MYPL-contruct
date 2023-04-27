@@ -261,3 +261,17 @@ void PrintVisitor::visit(VarRValue& v) {
     this->out << v.path[i].var_name.lexeme();
   }
 }
+
+
+
+void PrintVisitor::visit(SwitchStmt& s) {
+
+}
+
+void PrintVisitor::visit(CaseStmt& s) {
+
+}
+
+void PrintVisitor::visit(DefaultStmt& s) {
+
+}

@@ -562,3 +562,17 @@ void SemanticChecker::visit(VarRValue& v)
     }
   }
 }    
+
+
+
+void SemanticChecker::visit(SwitchStmt& s) {
+
+}
+
+void SemanticChecker::visit(CaseStmt& s) {
+
+}
+
+void SemanticChecker::visit(DefaultStmt& s) {
+
+}

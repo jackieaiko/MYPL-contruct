@@ -64,6 +64,11 @@ Token Lexer::next_token()
   }
 
   //check for single characters and two characters
+  if(peek() == ':'){
+    read();
+    return Token(TokenType::COLON,":",line,column); 
+  }
+  
   if(peek() == '.'){
     read();
     return Token(TokenType::DOT,".",line,column); 
@@ -359,6 +364,21 @@ Token Lexer::next_token()
     if(val == "return"){
       return Token(TokenType::RETURN, "return", line, column-val.length()+1);
     }
+
+    // project words
+    if(val == "switch"){
+      return Token(TokenType::SWITCH, "switch", line, column-val.length()+1);
+    }
+    if(val == "case"){
+      return Token(TokenType::CASE, "case", line, column-val.length()+1);
+    }
+    if(val == "break"){
+      return Token(TokenType::BREAK, "break", line, column-val.length()+1);
+    }
+    if(val == "default"){
+      return Token(TokenType::DEFAULT, "default", line, column-val.length()+1);
+    }
+
     return Token(TokenType::ID, val, line, column-val.length()+1);
   }
 

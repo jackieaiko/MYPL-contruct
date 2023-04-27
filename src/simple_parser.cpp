@@ -166,8 +166,13 @@ bool SimpleParser::base_type()
 
 void SimpleParser::stmt()
 {
+  //if match switch statement
+  if (match(TokenType::SWITCH))
+  {
+    switch_stmt();
+  }
 
-  if (match(TokenType::IF))
+  else if (match(TokenType::IF))
   {
     if_stmt();
   }
@@ -438,5 +443,58 @@ void SimpleParser::var_rvalue()
       expr();
       eat(TokenType::RBRACKET, "expecting rbracket");
     }
+  }
+}
+
+
+void SimpleParser::switch_stmt()
+{
+  eat(TokenType::SWITCH, "expecting switch");
+  eat(TokenType::LPAREN, "expecting lparen");
+  if(base_rvalue()) {
+    advance();
+  }
+  // else {
+  //   eat(TokenType::ID, "expecting id"); // pre defined const expression?
+  // }
+  eat(TokenType::RPAREN, "expecting rparen");
+  eat(TokenType::LBRACE, "expecting lbrace");
+  while (!match({TokenType::RBRACE, TokenType::DEFAULT}))
+  {
+    case_stmt();
+  }
+
+  if(match(TokenType::DEFAULT)) {
+    default_stmt();
+  }
+
+  eat(TokenType::RBRACE, "expecting rbrace");
+}
+
+void SimpleParser::case_stmt()
+{
+  eat(TokenType::CASE, "expecting case");
+  eat(TokenType::LPAREN, "expecting lparen");
+  if(base_rvalue()) {
+    advance();
+  }
+  eat(TokenType::RPAREN, "expecting rparen");
+  eat(TokenType::COLON, "expecting colon");
+  while (!match({TokenType::RBRACE, TokenType::DEFAULT, TokenType::BREAK, TokenType::CASE}))
+  {
+    stmt();
+  }
+  if (match(TokenType::BREAK)) {
+    eat(TokenType::BREAK, "expecting break");
+  }
+}
+
+void SimpleParser::default_stmt()
+{
+  eat(TokenType::DEFAULT, "expecting default");
+  eat(TokenType::COLON, "expecting colon");
+  while (!match(TokenType::RBRACE))
+  {
+    stmt();
   }
 }

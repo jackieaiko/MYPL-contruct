@@ -368,3 +368,18 @@ void CodeGenerator::visit(VarRValue& v)
   }
 }
     
+
+
+
+// switch statements
+void CodeGenerator::visit(SwitchStmt& s) {
+
+}
+
+void CodeGenerator::visit(CaseStmt& s) {
+
+}
+
+void CodeGenerator::visit(DefaultStmt& s) {
+
+}

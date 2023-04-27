@@ -31,7 +31,13 @@ public:
   void visit(ComplexTerm& t);
   void visit(SimpleRValue& v);
   void visit(NewRValue& v);
-  void visit(VarRValue& v);    
+  void visit(VarRValue& v);   
+
+  void visit(SwitchStmt& s);   
+  void visit(CaseStmt& s);   
+  void visit(DefaultStmt& s);   
+
+
 private:
   std::ostream& out;  
   int indent = 0;

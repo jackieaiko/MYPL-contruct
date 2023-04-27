@@ -37,6 +37,10 @@ class SimpleRValue;
 class NewRValue;
 class VarRValue;
 
+class SwitchStmt;
+class CaseStmt;
+class DefaultStmt;
+
 //----------------------------------------------------------------------
 // Visitor interface
 //----------------------------------------------------------------------
@@ -60,7 +64,11 @@ public:
   virtual void visit(ComplexTerm& t) = 0;  
   virtual void visit(SimpleRValue& v) = 0;  
   virtual void visit(NewRValue& v) = 0;  
-  virtual void visit(VarRValue& v) = 0;  
+  virtual void visit(VarRValue& v) = 0; 
+
+  virtual void visit(SwitchStmt& s) = 0;
+  virtual void visit(CaseStmt& s) = 0;  
+  virtual void visit(DefaultStmt& s) = 0; 
 };
 
 
@@ -290,6 +298,30 @@ public:
   std::vector<Expr> args;
   void accept(Visitor& v) { v.visit(*this); }  
   Token first_token() {return fun_name;}
+};
+
+
+
+
+// switch statements
+class SwitchStmt : public Stmt
+{
+public:
+  std::vector<DefaultStmt> default_part;
+  std::vector<CaseStmt> case_part;
+  void accept(Visitor& v) { v.visit(*this); }  
+};
+
+class CaseStmt
+{
+public:
+  std::vector<std::shared_ptr<Stmt>> stmts;
+};
+
+class DefaultStmt
+{
+public:
+  std::vector<std::shared_ptr<Stmt>> stmts;
 };
 
 
