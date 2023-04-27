@@ -62,8 +62,8 @@ private:
   void var_rvalue(std::vector<VarRef>& p);
 
   void switch_stmt(SwitchStmt& s);
-  void case_stmt(CaseStmt& S);
-  void default_stmt(DefaultStmt& s);
+  void case_stmt(SwitchStmt& S);
+  // void default_stmt(DefaultStmt& s);
 
 };
 

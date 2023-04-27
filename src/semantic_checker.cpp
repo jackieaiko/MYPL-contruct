@@ -573,6 +573,6 @@ void SemanticChecker::visit(CaseStmt& s) {
 
 }
 
-void SemanticChecker::visit(DefaultStmt& s) {
+// void SemanticChecker::visit(DefaultStmt& s) {
 
-}
+// }

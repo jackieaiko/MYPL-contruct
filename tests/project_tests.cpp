@@ -379,6 +379,120 @@ TEST(BasicSimpleParserTests, DefaultContainsBreak) {
 }
 
 
+//----------------------------------------------------------------------
+// ast_parser.cpp Tests
+//----------------------------------------------------------------------
+
+TEST(BasicASTParserTests, SwitchEmpty) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "  }",
+        "}"
+      }));
+  Program p = ASTParser(Lexer(in)).parse();
+  SwitchStmt& s = (SwitchStmt&)*p.fun_defs[0].stmts[0];
+  ASSERT_EQ(0, s.cases.size());
+  ASSERT_EQ(0, s.defaults.size());
+}
+
+TEST(BasicASTParserTests, SwitchOneCase) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      break",
+        "  }",
+        "}"
+      }));
+  Program p = ASTParser(Lexer(in)).parse();
+  SwitchStmt& s = (SwitchStmt&)*p.fun_defs[0].stmts[0];
+  ASSERT_EQ(1, s.cases.size());
+  ASSERT_EQ(0, s.defaults.size());
+}
+
+TEST(BasicASTParserTests, SwitchTwoCase) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      break",
+        "    case('b'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      break",
+        "  }",
+        "}"
+      }));
+  Program p = ASTParser(Lexer(in)).parse();
+  SwitchStmt& s = (SwitchStmt&)*p.fun_defs[0].stmts[0];
+  ASSERT_EQ(2, s.cases.size());
+  ASSERT_EQ(0, s.defaults.size());
+}
+
+TEST(BasicASTParserTests, SwitchNoBreak) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "    case('b'):",
+        "      int i = 0",
+        "      int j = 2",
+        "  }",
+        "}"
+      }));
+  Program p = ASTParser(Lexer(in)).parse();
+  SwitchStmt& s = (SwitchStmt&)*p.fun_defs[0].stmts[0];
+  ASSERT_EQ(2, s.cases.size());
+  ASSERT_EQ(2, s.cases[0].stmts.size());
+  ASSERT_EQ(0, s.defaults.size());
+}
+
+TEST(BasicASTParserTests, SwitchDefaultOnly) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    default:",
+        "      int i = 3",
+        "  }",
+        "}"
+      }));
+  Program p = ASTParser(Lexer(in)).parse();
+  SwitchStmt& s = (SwitchStmt&)*p.fun_defs[0].stmts[0];
+  ASSERT_EQ(0, s.cases.size());
+  ASSERT_EQ(1, s.defaults.size());
+}
+
+TEST(BasicASTParserTests, SwitchCombos) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      char yellow = 'y'",
+        "    case('b'):",
+        "      int i = 0",
+        "      int j = 2",
+        "    default:",
+        "      int i = 3",
+        "      int l = 21",
+        "  }",
+        "}"
+      }));
+  Program p = ASTParser(Lexer(in)).parse();
+  SwitchStmt& s = (SwitchStmt&)*p.fun_defs[0].stmts[0];
+  ASSERT_EQ(2, s.cases.size());
+  ASSERT_EQ(3, s.cases[0].stmts.size());
+  ASSERT_EQ(2, s.cases[1].stmts.size());
+  ASSERT_EQ(2, s.defaults.size());
+}
 
 //----------------------------------------------------------------------
 // print_visitor.cpp Tests
@@ -387,10 +501,6 @@ TEST(BasicSimpleParserTests, DefaultContainsBreak) {
 
 
 
-
-//----------------------------------------------------------------------
-// ast_parser.cpp Tests
-//----------------------------------------------------------------------
 
 
 

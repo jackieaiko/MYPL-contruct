@@ -272,6 +272,6 @@ void PrintVisitor::visit(CaseStmt& s) {
 
 }
 
-void PrintVisitor::visit(DefaultStmt& s) {
+// void PrintVisitor::visit(DefaultStmt& s) {
 
-}
+// }

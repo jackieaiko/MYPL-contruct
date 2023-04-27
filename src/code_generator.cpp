@@ -380,6 +380,6 @@ void CodeGenerator::visit(CaseStmt& s) {
 
 }
 
-void CodeGenerator::visit(DefaultStmt& s) {
+// void CodeGenerator::visit(DefaultStmt& s) {
 
-}
+// }

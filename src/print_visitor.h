@@ -35,7 +35,7 @@ public:
 
   void visit(SwitchStmt& s);   
   void visit(CaseStmt& s);   
-  void visit(DefaultStmt& s);   
+  // void visit(DefaultStmt& s);   
 
 
 private:

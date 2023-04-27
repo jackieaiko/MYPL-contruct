@@ -203,7 +203,12 @@ void ASTParser::base_type()
 
 void ASTParser::stmt(std::vector<std::shared_ptr<Stmt>>& s) 
 {
-  if(match(TokenType::IF)) {
+  if(match(TokenType::SWITCH)) {
+    SwitchStmt i;
+    switch_stmt(i);
+    s.push_back(std::make_shared<SwitchStmt>(i));
+  }
+  else if(match(TokenType::IF)) {
     IfStmt i;
     if_stmt(i);
     s.push_back(std::make_shared<IfStmt>(i));
@@ -562,17 +567,109 @@ void ASTParser::var_rvalue(std::vector<VarRef>& p)
 
 
 // switch statements
+// void ASTParser::switch_stmt(SwitchStmt& s)
+// {
+//   eat(TokenType::SWITCH, "expecting switch");
+//   eat(TokenType::LPAREN, "expecting lparen");
+//   //expr(w.condition);
+//   // SimpleRValue sr;
+//   // sr.value = curr_token;
+//   // base_rvalue(sr);
+//   // advance();
+
+//   eat(TokenType::RPAREN, "expecting rparen");
+//   eat(TokenType::LBRACE, "expecting lbrace");
+
+//   while (!match({TokenType::RBRACE, TokenType::DEFAULT}))
+//   {
+//     case_stmt(s);
+//   }
+
+//   if(match(TokenType::DEFAULT)) {
+//     default_stmt(s);
+//   }
+//   eat(TokenType::RBRACE, "expecting rbrace");
+// }
+
+// void ASTParser::case_stmt(SwitchStmt& s)
+// {
+//   eat(TokenType::CASE, "expecting case");
+//   eat(TokenType::LPAREN, "expecting lparen");
+//   //expr(w.condition);
+
+//   eat(TokenType::RPAREN, "expecting rparen");
+//   eat(TokenType::COLON, "expecting colon");
+
+//   while (!match({TokenType::RBRACE, TokenType::DEFAULT, TokenType::BREAK, TokenType::CASE}))
+//   {
+//     stmt(s.stmt);
+//   }
+//   if (match(TokenType::BREAK)) {
+//     eat(TokenType::BREAK, "expecting break");
+//   }
+// }
+
+// void ASTParser::default_stmt(DefaultStmt& s)
+// {
+//   eat(TokenType::DEFAULT, "expecting while");
+//   eat(TokenType::COLON, "expecting colon");
+//   while(!match(TokenType::RBRACE))
+//   {
+//     stmt(s.stmts);
+//   }
+// }
+
 void ASTParser::switch_stmt(SwitchStmt& s)
 {
+  eat(TokenType::SWITCH, "expecting switch");
+  eat(TokenType::LPAREN, "expecting lparen");
+  //  switch val
+  SimpleRValue sr;
+  base_rvalue(sr);
+  //advance();
+  eat(TokenType::RPAREN, "expecting rparen");
+  eat(TokenType::LBRACE, "expecting lbrace");
+  
 
+  case_stmt(s);
+  eat(TokenType::RBRACE, "expecting rbrace");
 }
 
-void ASTParser::case_stmt(CaseStmt& s)
+void ASTParser::case_stmt(SwitchStmt& s)
 {
+  if (match(TokenType::CASE)) {
+    CaseStmt c;
+    eat(TokenType::CASE, "expecting case");
+    eat(TokenType::LPAREN, "expecting lparen");
+    //  case val
+    SimpleRValue sr;
+    base_rvalue(sr);
+    //advance();
+    eat(TokenType::RPAREN, "expecting rparen");
+    eat(TokenType::COLON, "expecting colon");
 
-}
+    while (!match({TokenType::RBRACE, TokenType::DEFAULT, TokenType::BREAK, TokenType::CASE}))
+    {
+      stmt(c.stmts);
+    }
 
-void ASTParser::default_stmt(DefaultStmt& s)
-{
+    if (match(TokenType::BREAK)) {
+      eat(TokenType::BREAK, "expecting break");
+    }
+    s.cases.push_back(c);
+    
+    if (match(TokenType::CASE)) {
+      //s.cases.push_back(c);
+      case_stmt(s);
+    }
+  }
 
+  if (match(TokenType::DEFAULT)) {
+    eat(TokenType::DEFAULT, "expecting while");
+    eat(TokenType::COLON, "expecting colon");
+    while(!match(TokenType::RBRACE))
+    {
+      stmt(s.defaults);
+    }
+  }
 }
