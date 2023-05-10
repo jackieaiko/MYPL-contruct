@@ -63,7 +63,6 @@ private:
 
   void switch_stmt(SwitchStmt& s);
   void case_stmt(SwitchStmt& S);
-  // void default_stmt(DefaultStmt& s);
 
 };
 

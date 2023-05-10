@@ -138,11 +138,11 @@ void CodeGenerator::visit(IfStmt& s)
   for(auto& st: s.if_part.stmts) {
     st->accept(*this);
   }
-    
   var_table.pop_environment();
-  jmp.push_back(curr_frame.instructions.size());
 
+  jmp.push_back(curr_frame.instructions.size());
   curr_frame.instructions.push_back(VMInstr::JMP(-1));
+
   jmpf.push_back(curr_frame.instructions.size());
   curr_frame.instructions.push_back(VMInstr::NOP());
   curr_frame.instructions.at(jmpf[0]).set_operand(jmpf[1]);
@@ -163,6 +163,7 @@ void CodeGenerator::visit(IfStmt& s)
 
     jmp.push_back(curr_frame.instructions.size());
     curr_frame.instructions.push_back(VMInstr::JMP(-1));
+
     jmpf.push_back(curr_frame.instructions.size());
     curr_frame.instructions.push_back(VMInstr::NOP());
     curr_frame.instructions.at(jmpf[counter]).set_operand(jmpf[counter + 1]);
@@ -371,15 +372,47 @@ void CodeGenerator::visit(VarRValue& v)
 
 
 
-// switch statements
 void CodeGenerator::visit(SwitchStmt& s) {
+    vector<int> jmp;
+    vector<int> jmpf;
+
+    s.switch_expr.accept(*this);
+    // store
+    curr_frame.instructions.push_back(VMInstr::STORE(0));
+
+    int counter = 0;
+    for(auto b : s.cases) {
+      b.const_expr.accept(*this);
+      counter += 2;
+
+      jmpf.push_back(curr_frame.instructions.size());
+      curr_frame.instructions.push_back(VMInstr::JMPF(-1));
+
+      var_table.push_environment();
+      for(auto st : b.stmts) {
+        st->accept(*this);
+      }
+      var_table.pop_environment();
+
+      jmp.push_back(curr_frame.instructions.size());
+      curr_frame.instructions.push_back(VMInstr::JMP(-1));
+
+      jmpf.push_back(curr_frame.instructions.size());
+      curr_frame.instructions.push_back(VMInstr::NOP());
+      curr_frame.instructions.at(jmpf[counter]).set_operand(jmpf[counter + 1]);
+      
+    }
+
+    for(auto st : s.defaults) {
+      st->accept(*this);
+    }
+
+    int index = curr_frame.instructions.size();
+    curr_frame.instructions.push_back(VMInstr::NOP());
+
+    for(auto i : jmp){
+      curr_frame.instructions.at(i).set_operand(index);
+    }
 
 }
 
-void CodeGenerator::visit(CaseStmt& s) {
-
-}
-
-// void CodeGenerator::visit(DefaultStmt& s) {
-
-// }

@@ -566,13 +566,40 @@ void SemanticChecker::visit(VarRValue& v)
 
 
 void SemanticChecker::visit(SwitchStmt& s) {
+  symbol_table.push_environment();
+  s.switch_expr.accept(*this);
 
+  if(curr_type.type_name != "double" && curr_type.type_name != "int" && 
+  curr_type.type_name != "bool" && curr_type.type_name != "char" && curr_type.type_name != "string") {
+    error("switch value is an incorrect type");
+  }
+
+  if(s.cases.size() > 0) {
+    for(auto b : s.cases) {
+      symbol_table.push_environment();
+      b.const_expr.accept(*this);
+
+      if(curr_type.type_name != "double" && curr_type.type_name != "int" && 
+      curr_type.type_name != "bool" && curr_type.type_name != "char" && curr_type.type_name != "string") {
+        error("case value is an incorrect type");
+      }
+
+      for(auto st : b.stmts) {
+        st->accept(*this);
+      }
+      
+      symbol_table.pop_environment();
+    }
+  }
+
+  symbol_table.push_environment();
+  if(s.defaults.size() > 0) {
+    for(auto st : s.defaults) {
+      st->accept(*this);
+    }
+  }
+  
+  symbol_table.pop_environment();
+  symbol_table.pop_environment();
 }
 
-void SemanticChecker::visit(CaseStmt& s) {
-
-}
-
-// void SemanticChecker::visit(DefaultStmt& s) {
-
-// }

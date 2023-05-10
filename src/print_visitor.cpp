@@ -6,6 +6,7 @@
 //----------------------------------------------------------------------
 
 #include "print_visitor.h"
+#include <iostream>
 
 using namespace std;
 
@@ -265,13 +266,50 @@ void PrintVisitor::visit(VarRValue& v) {
 
 
 void PrintVisitor::visit(SwitchStmt& s) {
+  this->out << "switch (";
+  // switch val
+  s.switch_expr.accept(*this);
+  
+  this->out << ") {" << endl;
+  inc_indent();
 
+  for(auto b : s.cases) {
+    this->out << endl;
+    print_indent();
+    this->out << "case (";
+    // case val
+    b.const_expr.accept(*this);
+    
+    this->out << ") :" << endl;
+    inc_indent();
+
+    for(auto s : b.stmts) {
+      print_indent();
+      s->accept(*this);
+      this->out << endl;
+    }
+
+    // break statements
+
+    dec_indent();
+    print_indent();
+  }
+
+  if(s.defaults.size() > 0) {
+    this->out << endl;
+    print_indent();
+    this->out << "default :" << endl;
+    inc_indent();
+
+    for(auto s : s.defaults) {
+      print_indent();
+      s->accept(*this);
+      this->out << endl;
+    }
+    dec_indent();
+    print_indent();
+  }
+  dec_indent();
+  print_indent();
+  this->out << "}";
 }
-
-void PrintVisitor::visit(CaseStmt& s) {
-
-}
-
-// void PrintVisitor::visit(DefaultStmt& s) {
-
-// }

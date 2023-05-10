@@ -17,6 +17,7 @@
 #include "ast_parser.h"
 #include "vm.h"
 #include "code_generator.h"
+#include "semantic_checker.h"
 
 using namespace std;
 
@@ -499,17 +500,280 @@ TEST(BasicASTParserTests, SwitchCombos) {
 //----------------------------------------------------------------------
 
 
+TEST(BasicASTParserTests, ParserEmptySwitch) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "  }",
+        "}"
+      }));
+  ASTParser(Lexer(in)).parse();  
+}
+
+
+TEST(BasicASTParserTests, ParserSwitchOneCase) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      break",
+        "  }",
+        "}"
+      }));
+  ASTParser(Lexer(in)).parse();  
+}
+
+TEST(BasicASTParserTests, ParserSwitchTwoCase) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      break",
+        "    case('b'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      break",
+        "  }",
+        "}"
+      }));
+  ASTParser(Lexer(in)).parse();  
+}
+
+TEST(BasicASTParserTests, ParserSwitchNoBreak) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "    case('b'):",
+        "      int i = 0",
+        "      int j = 2",
+        "  }",
+        "}"
+      }));
+  ASTParser(Lexer(in)).parse();  
+}
+
+TEST(BasicASTParserTests, ParserSwitchDefaultOnly) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    default:",
+        "      int i = 3",
+        "  }",
+        "}"
+      }));
+  ASTParser(Lexer(in)).parse();  
+}
+
+TEST(BasicASTParserTests, ParserSwitchCombos) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      char yellow = 'y'",
+        "    case('b'):",
+        "      int i = 0",
+        "      int j = 2",
+        "    default:",
+        "      int i = 3",
+        "      int l = 21",
+        "  }",
+        "}"
+      }));
+  ASTParser(Lexer(in)).parse();  
+}
 
 
 
+//----------------------------------------------------------------------
+// semantic_checker.cpp Tests
+//----------------------------------------------------------------------
+
+TEST(BasicSemanticCheckerTests, ParserEmptySwitch) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "  }",
+        "}"
+      }));
+  ASTParser(Lexer(in)).parse();  
+}
+
+
+TEST(BasicSemanticCheckerTests, ParserSwitchOneCase) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      break",
+        "  }",
+        "}"
+      }));
+  ASTParser(Lexer(in)).parse();  
+}
+
+TEST(BasicSemanticCheckerTests, ParserSwitchTwoCase) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      break",
+        "    case('b'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      break",
+        "  }",
+        "}"
+      }));
+  ASTParser(Lexer(in)).parse();  
+}
+
+TEST(BasicSemanticCheckerTests, ParserSwitchNoBreak) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "    case('b'):",
+        "      int i = 0",
+        "      int j = 2",
+        "  }",
+        "}"
+      }));
+  ASTParser(Lexer(in)).parse();  
+}
+
+TEST(BasicSemanticCheckerTests, ParserSwitchDefaultOnly) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    default:",
+        "      int i = 3",
+        "  }",
+        "}"
+      }));
+  ASTParser(Lexer(in)).parse();  
+}
+
+TEST(BasicSemanticCheckerTests, ParserSwitchCombos) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      char yellow = 'y'",
+        "    case('b'):",
+        "      int i = 0",
+        "      int j = 2",
+        "    default:",
+        "      int i = 3",
+        "      int l = 21",
+        "  }",
+        "}"
+      }));
+  ASTParser(Lexer(in)).parse();  
+}
+
+TEST(BasicSemanticCheckerTests, EmpytySwitchExpr) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch() {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      char yellow = 'y'",
+        "    case('b'):",
+        "      int i = 0",
+        "      int j = 2",
+        "    default:",
+        "      int i = 3",
+        "      int l = 21",
+        "  }",
+        "}"
+      }));
+  SemanticChecker checker;
+  try {
+    ASTParser(Lexer(in)).parse().accept(checker);
+    FAIL();
+  } catch (MyPLException& ex) {
+    string msg = ex.what();
+    ASSERT_TRUE(msg.starts_with("Static Error:"));
+  }
+}
+
+// TEST(BasicSemanticCheckerTests, WrongSwitchExpr) {
+//   stringstream in(build_string({
+//         "void main() {", 
+//         "  switch(i)) {",
+//         "    case('a'):",
+//         "      int i = 0",
+//         "      int j = 2",
+//         "      char yellow = 'y'",
+//         "    case('b'):",
+//         "      int i = 0",
+//         "      int j = 2",
+//         "    default:",
+//         "      int i = 3",
+//         "      int l = 21",
+//         "  }",
+//         "}"
+//       }));
+//   SemanticChecker checker;
+//   try {
+//     ASTParser(Lexer(in)).parse().accept(checker);
+//     FAIL();
+//   } catch (MyPLException& ex) {
+//     string msg = ex.what();
+//     ASSERT_TRUE(msg.starts_with("Static Error:"));
+//   }
+// }
 
 
 
+//----------------------------------------------------------------------
+// code_generator.cpp Tests
+//----------------------------------------------------------------------
 
-
-
-
-
+TEST(BasicCodeGenTest, BasicIfSt) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch('a') {",
+        "    case('a'):",
+        "      int i = 0",
+        "      int j = 2",
+        "      char yellow = 'y'",
+        // "    case('b'):",
+        // "      int i = 0",
+        // "      int j = 2",
+        // "    default:",
+        // "      int i = 3",
+        // "      int l = 21",
+        "  }",
+        "}"
+      }));
+  VM vm;
+  CodeGenerator generator(vm);
+  ASTParser(Lexer(in)).parse().accept(generator);
+  stringstream out;
+  change_cout(out);
+  vm.run();
+  // EXPECT_EQ("0 1 0", out.str());
+  restore_cout();
+}
 
 
 //----------------------------------------------------------------------

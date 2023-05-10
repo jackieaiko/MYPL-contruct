@@ -39,7 +39,6 @@ class VarRValue;
 
 class SwitchStmt;
 class CaseStmt;
-// class DefaultStmt;
 
 //----------------------------------------------------------------------
 // Visitor interface
@@ -67,7 +66,7 @@ public:
   virtual void visit(VarRValue& v) = 0; 
 
   virtual void visit(SwitchStmt& s) = 0;
-  virtual void visit(CaseStmt& s) = 0;  
+  // virtual void visit(CaseStmt& s) = 0;  
   // virtual void visit(DefaultStmt& s) = 0; 
 };
 
@@ -303,26 +302,6 @@ public:
 
 
 
-// switch statements
-// class SwitchStmt : public Stmt
-// {
-// public:
-//   std::vector<DefaultStmt> default_part;
-//   std::vector<CaseStmt> case_part;
-//   void accept(Visitor& v) { v.visit(*this); }  
-// };
-
-// class CaseStmt
-// {
-// public:
-//   std::vector<std::shared_ptr<Stmt>> stmts;
-// };
-
-// class DefaultStmt
-// {
-// public:
-//   std::vector<std::shared_ptr<Stmt>> stmts;
-// };
 
 class CaseStmt
 {
@@ -335,6 +314,7 @@ public:
 class SwitchStmt : public Stmt
 {
 public:
+  SimpleRValue switch_expr;
   std::vector<CaseStmt> cases;
   std::vector<std::shared_ptr<Stmt>> defaults;
   void accept(Visitor& v) { v.visit(*this); }  

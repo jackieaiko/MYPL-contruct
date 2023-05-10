@@ -36,8 +36,7 @@ public:
   void visit(VarRValue& v);    
 
   void visit(SwitchStmt& s);   
-  void visit(CaseStmt& s);   
-  // void visit(DefaultStmt& s);   
+;   
 
 private:
 
