@@ -308,6 +308,7 @@ class CaseStmt
 public:
   SimpleRValue const_expr;
   std::vector<std::shared_ptr<Stmt>> stmts;
+  std::optional<Token> op = std::nullopt;
 };
 
 

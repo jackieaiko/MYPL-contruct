@@ -594,9 +594,13 @@ void ASTParser::case_stmt(SwitchStmt& s)
       stmt(c.stmts);
     }
 
-    if (match(TokenType::BREAK)) {
-      eat(TokenType::BREAK, "expecting break");
+    if(match(TokenType::BREAK))
+    {
+      c.op = curr_token;
+      advance();
     }
+
+
     s.cases.push_back(c);
     
     if (match(TokenType::CASE)) {

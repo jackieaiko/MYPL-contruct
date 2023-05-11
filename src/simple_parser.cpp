@@ -188,10 +188,6 @@ void SimpleParser::stmt()
   {
     ret_stmt();
   }
-  else if (match(TokenType::BREAK))
-  {
-    eat(TokenType::BREAK, "expecting break");
-  }
   else if(match(TokenType::ID))
   {
     eat(TokenType::ID, "expecting id");
@@ -485,13 +481,13 @@ void SimpleParser::case_stmt()
     advance();
   }
   eat(TokenType::COLON, "expecting colon");
-  while (!match({TokenType::RBRACE, TokenType::DEFAULT, TokenType::CASE}))
+  while (!match({TokenType::RBRACE, TokenType::DEFAULT, TokenType::BREAK, TokenType::CASE}))
   {
     stmt();
   }
-  // if (match(TokenType::BREAK)) {
-  //   eat(TokenType::BREAK, "expecting break");
-  // }
+  if (match(TokenType::BREAK)) {
+    eat(TokenType::BREAK, "expecting break");
+  }
 }
 
 void SimpleParser::default_stmt()

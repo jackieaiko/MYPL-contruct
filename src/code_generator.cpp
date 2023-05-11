@@ -381,28 +381,46 @@ void CodeGenerator::visit(SwitchStmt& s) {
     curr_frame.instructions.push_back(VMInstr::STORE(var_table.get(s.switch_expr.value.lexeme())));
 
     int counter = 0;
+    bool break_exist = false;
+    bool break_dne = false;
     for(auto b : s.cases) {
-      b.const_expr.accept(*this);
-      curr_frame.instructions.push_back(VMInstr::LOAD(var_table.get(s.switch_expr.value.lexeme())));
-      curr_frame.instructions.push_back(VMInstr::CMPEQ());
-      
+      if(break_exist) {
 
-      jmpf.push_back(curr_frame.instructions.size());
-      curr_frame.instructions.push_back(VMInstr::JMPF(-1));
-
-      var_table.push_environment();
-      for(auto st : b.stmts) {
-        st->accept(*this);
       }
-      var_table.pop_environment();
+      else {
+        b.const_expr.accept(*this);
 
-      jmp.push_back(curr_frame.instructions.size());
-      curr_frame.instructions.push_back(VMInstr::JMP(-1));
+        if(break_dne == false) {
+          curr_frame.instructions.push_back(VMInstr::LOAD(var_table.get(s.switch_expr.value.lexeme())));
+          curr_frame.instructions.push_back(VMInstr::CMPEQ());
+          jmpf.push_back(curr_frame.instructions.size());
+          curr_frame.instructions.push_back(VMInstr::JMPF(-1));
+        }
+        else {
+          curr_frame.instructions.push_back(VMInstr::POP());
+          counter -= 2;
+        }
 
-      jmpf.push_back(curr_frame.instructions.size());
-      curr_frame.instructions.push_back(VMInstr::NOP());
-      curr_frame.instructions.at(jmpf[counter]).set_operand(jmpf[counter + 1]);
-      counter += 2;
+        var_table.push_environment();
+        for(auto st : b.stmts) {
+          st->accept(*this);
+        }
+        var_table.pop_environment();
+
+        if(b.op.has_value()) {
+          break_exist == true;
+          jmp.push_back(curr_frame.instructions.size());
+          curr_frame.instructions.push_back(VMInstr::JMP(-1));
+        }
+        else {
+          break_dne = true;
+        }
+
+        jmpf.push_back(curr_frame.instructions.size());
+        curr_frame.instructions.push_back(VMInstr::NOP());
+        curr_frame.instructions.at(jmpf[counter]).set_operand(jmpf[counter + 1]);
+        counter += 2;
+      }
     }
 
     for(auto st : s.defaults) {

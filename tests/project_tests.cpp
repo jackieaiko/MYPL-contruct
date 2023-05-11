@@ -370,7 +370,14 @@ TEST(BasicSimpleParserTests, DefaultContainsBreak) {
         "  }",
         "}"
       }));
-  SimpleParser(Lexer(in)).parse();  
+  try {
+    SimpleParser(Lexer(in)).parse();
+    FAIL();
+  }
+  catch(MyPLException& e) {
+    string msg = e.what();
+    ASSERT_EQ("Parser Error: ", msg.substr(0, 14));
+  }
 }
 
 
@@ -502,23 +509,6 @@ TEST(BasicASTParserTests, ParserEmptySwitch) {
         "}"
       }));
   ASTParser(Lexer(in)).parse();  
-}
-
-TEST(BasicASTParserTests, NoExprInSwitch) {
-  stringstream in(build_string({
-        "void main() {", 
-        "  switch() {",
-        "  }",
-        "}"
-      }));
-  try {
-    ASTParser(Lexer(in)).parse();
-    FAIL();
-  }
-  catch(MyPLException& e) {
-    string msg = e.what();
-    ASSERT_EQ("Parser Error: ", msg.substr(0, 14));
-  }
 }
 
 
@@ -732,49 +722,18 @@ TEST(BasicSemanticCheckerTests, EmpytySwitchExpr) {
 // code_generator.cpp Tests
 //----------------------------------------------------------------------
 
-TEST(BasicCodeGenTest, Case1Test) {
-  stringstream in(build_string({
-        "void main() {", 
-        "  switch('a') {",
-        "    case 'a':",
-        "      int i = 0",
-        "      int j = 2",
-        "      char yellow = 'y'",
-        "    case 'b':",
-        "      int i = 0",
-        "      int j = 2",
-        "    default:",
-        "      int i = 3",
-        "      int l = 21",
-        "  }",
-        "}"
-      }));
-  VM vm;
-  CodeGenerator generator(vm);
-  ASTParser(Lexer(in)).parse().accept(generator);
-  stringstream out;
-  change_cout(out);
-  vm.run();
-  restore_cout();
-}
-
-TEST(BasicCodeGenTest, Case2Test) {
+TEST(BasicCodeGenTest, NoBreaks) {
   stringstream in(build_string({
         "void main() {", 
         "  switch(1) {",
         "    case 0:",
-        "      int i = 0",
-        "      int j = 2",
-        "      char yellow = 'y'",
+        "      print(0)",
         "    case 1:",
-        "      int i = 0",
-        "      int j = 2",
+        "      print(1)",
         "    case 2:",
-        "      int i = 0",
-        "      int j = 2",
+        "      print(2)",
         "    default:",
-        "      int i = 3",
-        "      int l = 21",
+        "      print(3)",
         "  }",
         "}"
       }));
@@ -784,6 +743,114 @@ TEST(BasicCodeGenTest, Case2Test) {
   stringstream out;
   change_cout(out);
   vm.run();
+  EXPECT_EQ("123", out.str());
+  restore_cout();
+}
+
+TEST(BasicCodeGenTest, NoMatch) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch(8) {",
+        "    case 0:",
+        "      print(0)",
+        "      break",
+        "    case 1:",
+        "      print(1)",
+        "      break",
+        "    case 2:",
+        "      print(2)",
+        "      break",
+        "    default:",
+        "      print(3)",
+        "  }",
+        "}"
+      }));
+  VM vm;
+  CodeGenerator generator(vm);
+  ASTParser(Lexer(in)).parse().accept(generator);
+  stringstream out;
+  change_cout(out);
+  vm.run();
+  EXPECT_EQ("3", out.str());
+  restore_cout();
+}
+
+TEST(BasicCodeGenTest, BreakNoBreakCase) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch(0) {",
+        "    case 0:",
+        "      print(0)",
+        "      break",
+        "    case 1:",
+        "      print(1)",
+        "    case 2:",
+        "      print(2)",
+        "    default:",
+        "      print(3)",
+        "  }",
+        "}"
+      }));
+  VM vm;
+  CodeGenerator generator(vm);
+  ASTParser(Lexer(in)).parse().accept(generator);
+  stringstream out;
+  change_cout(out);
+  vm.run();
+  EXPECT_EQ("0", out.str());
+  restore_cout();
+}
+
+TEST(BasicCodeGenTest, BreakNoBreakCase2) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch(1) {",
+        "    case 0:",
+        "      print(0)",
+        "      break",
+        "    case 1:",
+        "      print(1)",
+        "    case 2:",
+        "      print(2)",
+        "    default:",
+        "      print(3)",
+        "  }",
+        "}"
+      }));
+  VM vm;
+  CodeGenerator generator(vm);
+  ASTParser(Lexer(in)).parse().accept(generator);
+  stringstream out;
+  change_cout(out);
+  vm.run();
+  EXPECT_EQ("123", out.str());
+  restore_cout();
+}
+
+
+TEST(BasicCodeGenTest, NoBreakBreak) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch(0) {",
+        "    case 0:",
+        "      print(0)",
+        "    case 1:",
+        "      print(1)",
+        "    case 2:",
+        "      print(2)",
+        "      break",
+        "    default:",
+        "      print(3)",
+        "  }",
+        "}"
+      }));
+  VM vm;
+  CodeGenerator generator(vm);
+  ASTParser(Lexer(in)).parse().accept(generator);
+  stringstream out;
+  change_cout(out);
+  vm.run();
+  EXPECT_EQ("012", out.str());
   restore_cout();
 }
 

@@ -289,7 +289,12 @@ void PrintVisitor::visit(SwitchStmt& s) {
       this->out << endl;
     }
 
-    // break statements
+    // break statement
+    if(b.op.has_value())
+    {
+      print_indent();
+      this->out << b.op->lexeme() << endl;
+    }
 
     dec_indent();
     print_indent();
