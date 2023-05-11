@@ -573,11 +573,9 @@ void ASTParser::switch_stmt(SwitchStmt& s)
 {
   eat(TokenType::SWITCH, "expecting switch");
   eat(TokenType::LPAREN, "expecting lparen");
-  //  switch val
   base_rvalue(s.switch_expr);
   eat(TokenType::RPAREN, "expecting rparen");
   eat(TokenType::LBRACE, "expecting lbrace");
-  
 
   case_stmt(s);
   eat(TokenType::RBRACE, "expecting rbrace");
@@ -588,10 +586,7 @@ void ASTParser::case_stmt(SwitchStmt& s)
   if (match(TokenType::CASE)) {
     CaseStmt c;
     eat(TokenType::CASE, "expecting case");
-    eat(TokenType::LPAREN, "expecting lparen");
-    //  case val
     base_rvalue(c.const_expr);
-    eat(TokenType::RPAREN, "expecting rparen");
     eat(TokenType::COLON, "expecting colon");
 
     while (!match({TokenType::RBRACE, TokenType::DEFAULT, TokenType::BREAK, TokenType::CASE}))

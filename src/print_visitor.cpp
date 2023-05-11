@@ -276,11 +276,11 @@ void PrintVisitor::visit(SwitchStmt& s) {
   for(auto b : s.cases) {
     this->out << endl;
     print_indent();
-    this->out << "case (";
-    // case val
+    this->out << "case ";
+
     b.const_expr.accept(*this);
     
-    this->out << ") :" << endl;
+    this->out << ":" << endl;
     inc_indent();
 
     for(auto s : b.stmts) {
@@ -309,7 +309,7 @@ void PrintVisitor::visit(SwitchStmt& s) {
     dec_indent();
     print_indent();
   }
+
   dec_indent();
-  print_indent();
   this->out << "}";
 }

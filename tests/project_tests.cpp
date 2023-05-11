@@ -189,10 +189,10 @@ TEST(BasicSimpleParserTests, SwitchEmptyCase) {
   stringstream in(build_string({
         "void my_fun() {",
         "  switch(0) {",
-        "    case(0):",
-        "    case(1):",
-        "    case(2):",
-        "    case(3):",
+        "    case 0:",
+        "    case 1:",
+        "    case 2:",
+        "    case 3:",
         "  }",
         "}"
       }));
@@ -203,9 +203,10 @@ TEST(BasicSimpleParserTests, SwitchEmptyDefault) {
   stringstream in(build_string({
         "void my_fun() {",
         "  switch(0) {",
-        "    case(0):",
-        "    case(1):",
-        "    case(2):",
+        "    case 0:",
+        "    case 1:",
+        "    case 2:",
+        "    case 3:",
         "    default:",
         "  }",
         "}"
@@ -217,11 +218,11 @@ TEST(BasicSimpleParserTests, SwitchCaseNoBreaks) {
   stringstream in(build_string({
         "void my_fun() {",
         "  switch(0) {",
-        "    case(0):",
+        "    case 0:",
         "      int i = 0",
-        "    case(1):",
+        "    case 1:",
         "      int i = 1",
-        "    case(2):",
+        "    case 2:",
         "      int i = 2",
         "    default:",
         "      int i = 3",
@@ -235,13 +236,13 @@ TEST(BasicSimpleParserTests, SwitchCaseBreaks) {
   stringstream in(build_string({
         "void my_fun() {",
         "  switch(0) {",
-        "    case(0):",
+        "    case 0:",
         "      int i = 0",
         "      break",
-        "    case(1):",
+        "    case 1:",
         "      int i = 1",
         "      break",
-        "    case(2):",
+        "    case 2:",
         "      int i = 2",
         "      break",
         "    default:",
@@ -256,13 +257,13 @@ TEST(BasicSimpleParserTests, SwitchNoDefault) {
   stringstream in(build_string({
         "void my_fun() {",
         "  switch(0) {",
-        "    case(0):",
+        "    case 0:",
         "      int i = 0",
         "      break",
-        "    case(1):",
+        "    case 1:",
         "      int i = 1",
         "      break",
-        "    case(2):",
+        "    case 2:",
         "      int i = 2",
         "  }",
         "}"
@@ -274,13 +275,13 @@ TEST(BasicSimpleParserTests, SwitchCharType) {
   stringstream in(build_string({
         "void my_fun() {",
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      break",
-        "    case('b'):",
+        "    case 'b':",
         "      int i = 1",
         "      break",
-        "    case('c'):",
+        "    case 'c':",
         "      int i = 2",
         "      break",
         "    default:",
@@ -296,13 +297,13 @@ TEST(BasicSimpleParserTests, SwitchCombo) {
   stringstream in(build_string({
         "void my_fun() {",
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
         "      break",
-        "    case('b'):",
+        "    case 'b':",
         "      int i = 1",
-        "    case('c'):",
+        "    case 'c':",
         "      int i = 2",
         "      int j = 4",
         "      break",
@@ -313,11 +314,11 @@ TEST(BasicSimpleParserTests, SwitchCombo) {
 }
 
 // bad
-TEST(BasicSimpleParserTests, MissingParen) {
+TEST(BasicSimpleParserTests, AddedParen) {
   stringstream in(build_string({
         "void my_fun() {",
         "  switch('a') {",
-        "    case'a'):",
+        "    case 'a'):",
         "      int i = 0",
         "      int j = 2",
         "      break",
@@ -338,7 +339,7 @@ TEST(BasicSimpleParserTests, UndefinedConstantExpr) {
   stringstream in(build_string({
         "void my_fun() {",
         "  switch('a') {",
-        "    case(a):",
+        "    case a:",
         "      int i = 0",
         "      int j = 2",
         "      break",
@@ -359,7 +360,7 @@ TEST(BasicSimpleParserTests, DefaultContainsBreak) {
   stringstream in(build_string({
         "void my_fun() {",
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
         "      break",
@@ -369,14 +370,7 @@ TEST(BasicSimpleParserTests, DefaultContainsBreak) {
         "  }",
         "}"
       }));
-  try {
-    SimpleParser(Lexer(in)).parse();
-    FAIL();
-  }
-  catch(MyPLException& e) {
-    string msg = e.what();
-    ASSERT_EQ("Parser Error: ", msg.substr(0, 14));
-  }
+  SimpleParser(Lexer(in)).parse();  
 }
 
 
@@ -401,7 +395,7 @@ TEST(BasicASTParserTests, SwitchOneCase) {
   stringstream in(build_string({
         "void main() {", 
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
         "      break",
@@ -418,11 +412,11 @@ TEST(BasicASTParserTests, SwitchTwoCase) {
   stringstream in(build_string({
         "void main() {", 
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
         "      break",
-        "    case('b'):",
+        "    case 'b':",
         "      int i = 0",
         "      int j = 2",
         "      break",
@@ -439,10 +433,10 @@ TEST(BasicASTParserTests, SwitchNoBreak) {
   stringstream in(build_string({
         "void main() {", 
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
-        "    case('b'):",
+        "    case 'b':",
         "      int i = 0",
         "      int j = 2",
         "  }",
@@ -474,11 +468,11 @@ TEST(BasicASTParserTests, SwitchCombos) {
   stringstream in(build_string({
         "void main() {", 
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
         "      char yellow = 'y'",
-        "    case('b'):",
+        "    case 'b':",
         "      int i = 0",
         "      int j = 2",
         "    default:",
@@ -510,12 +504,29 @@ TEST(BasicASTParserTests, ParserEmptySwitch) {
   ASTParser(Lexer(in)).parse();  
 }
 
+TEST(BasicASTParserTests, NoExprInSwitch) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch() {",
+        "  }",
+        "}"
+      }));
+  try {
+    ASTParser(Lexer(in)).parse();
+    FAIL();
+  }
+  catch(MyPLException& e) {
+    string msg = e.what();
+    ASSERT_EQ("Parser Error: ", msg.substr(0, 14));
+  }
+}
+
 
 TEST(BasicASTParserTests, ParserSwitchOneCase) {
   stringstream in(build_string({
         "void main() {", 
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
         "      break",
@@ -529,11 +540,11 @@ TEST(BasicASTParserTests, ParserSwitchTwoCase) {
   stringstream in(build_string({
         "void main() {", 
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
         "      break",
-        "    case('b'):",
+        "    case 'b':",
         "      int i = 0",
         "      int j = 2",
         "      break",
@@ -547,10 +558,10 @@ TEST(BasicASTParserTests, ParserSwitchNoBreak) {
   stringstream in(build_string({
         "void main() {", 
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
-        "    case('b'):",
+        "    case 'b':",
         "      int i = 0",
         "      int j = 2",
         "  }",
@@ -575,11 +586,11 @@ TEST(BasicASTParserTests, ParserSwitchCombos) {
   stringstream in(build_string({
         "void main() {", 
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
         "      char yellow = 'y'",
-        "    case('b'):",
+        "    case 'b':",
         "      int i = 0",
         "      int j = 2",
         "    default:",
@@ -612,7 +623,7 @@ TEST(BasicSemanticCheckerTests, ParserSwitchOneCase) {
   stringstream in(build_string({
         "void main() {", 
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
         "      break",
@@ -626,11 +637,11 @@ TEST(BasicSemanticCheckerTests, ParserSwitchTwoCase) {
   stringstream in(build_string({
         "void main() {", 
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
         "      break",
-        "    case('b'):",
+        "    case 'b':",
         "      int i = 0",
         "      int j = 2",
         "      break",
@@ -644,10 +655,10 @@ TEST(BasicSemanticCheckerTests, ParserSwitchNoBreak) {
   stringstream in(build_string({
         "void main() {", 
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
-        "    case('b'):",
+        "    case 'b':",
         "      int i = 0",
         "      int j = 2",
         "  }",
@@ -672,11 +683,11 @@ TEST(BasicSemanticCheckerTests, ParserSwitchCombos) {
   stringstream in(build_string({
         "void main() {", 
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
         "      char yellow = 'y'",
-        "    case('b'):",
+        "    case 'b':",
         "      int i = 0",
         "      int j = 2",
         "    default:",
@@ -692,11 +703,11 @@ TEST(BasicSemanticCheckerTests, EmpytySwitchExpr) {
   stringstream in(build_string({
         "void main() {", 
         "  switch() {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
         "      char yellow = 'y'",
-        "    case('b'):",
+        "    case 'b':",
         "      int i = 0",
         "      int j = 2",
         "    default:",
@@ -715,53 +726,26 @@ TEST(BasicSemanticCheckerTests, EmpytySwitchExpr) {
   }
 }
 
-// TEST(BasicSemanticCheckerTests, WrongSwitchExpr) {
-//   stringstream in(build_string({
-//         "void main() {", 
-//         "  switch(i)) {",
-//         "    case('a'):",
-//         "      int i = 0",
-//         "      int j = 2",
-//         "      char yellow = 'y'",
-//         "    case('b'):",
-//         "      int i = 0",
-//         "      int j = 2",
-//         "    default:",
-//         "      int i = 3",
-//         "      int l = 21",
-//         "  }",
-//         "}"
-//       }));
-//   SemanticChecker checker;
-//   try {
-//     ASTParser(Lexer(in)).parse().accept(checker);
-//     FAIL();
-//   } catch (MyPLException& ex) {
-//     string msg = ex.what();
-//     ASSERT_TRUE(msg.starts_with("Static Error:"));
-//   }
-// }
-
 
 
 //----------------------------------------------------------------------
 // code_generator.cpp Tests
 //----------------------------------------------------------------------
 
-TEST(BasicCodeGenTest, BasicIfSt) {
+TEST(BasicCodeGenTest, Case1Test) {
   stringstream in(build_string({
         "void main() {", 
         "  switch('a') {",
-        "    case('a'):",
+        "    case 'a':",
         "      int i = 0",
         "      int j = 2",
         "      char yellow = 'y'",
-        // "    case('b'):",
-        // "      int i = 0",
-        // "      int j = 2",
-        // "    default:",
-        // "      int i = 3",
-        // "      int l = 21",
+        "    case 'b':",
+        "      int i = 0",
+        "      int j = 2",
+        "    default:",
+        "      int i = 3",
+        "      int l = 21",
         "  }",
         "}"
       }));
@@ -771,10 +755,37 @@ TEST(BasicCodeGenTest, BasicIfSt) {
   stringstream out;
   change_cout(out);
   vm.run();
-  // EXPECT_EQ("0 1 0", out.str());
   restore_cout();
 }
 
+TEST(BasicCodeGenTest, Case2Test) {
+  stringstream in(build_string({
+        "void main() {", 
+        "  switch(1) {",
+        "    case 0:",
+        "      int i = 0",
+        "      int j = 2",
+        "      char yellow = 'y'",
+        "    case 1:",
+        "      int i = 0",
+        "      int j = 2",
+        "    case 2:",
+        "      int i = 0",
+        "      int j = 2",
+        "    default:",
+        "      int i = 3",
+        "      int l = 21",
+        "  }",
+        "}"
+      }));
+  VM vm;
+  CodeGenerator generator(vm);
+  ASTParser(Lexer(in)).parse().accept(generator);
+  stringstream out;
+  change_cout(out);
+  vm.run();
+  restore_cout();
+}
 
 //----------------------------------------------------------------------
 // main

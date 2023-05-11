@@ -188,6 +188,10 @@ void SimpleParser::stmt()
   {
     ret_stmt();
   }
+  else if (match(TokenType::BREAK))
+  {
+    eat(TokenType::BREAK, "expecting break");
+  }
   else if(match(TokenType::ID))
   {
     eat(TokenType::ID, "expecting id");
@@ -457,6 +461,9 @@ void SimpleParser::switch_stmt()
   if(base_rvalue()) {
     advance();
   }
+  else {
+    eat(TokenType::ID, "expecting id");
+  }
   eat(TokenType::RPAREN, "expecting rparen");
   eat(TokenType::LBRACE, "expecting lbrace");
   while (!match({TokenType::RBRACE, TokenType::DEFAULT}))
@@ -474,19 +481,17 @@ void SimpleParser::switch_stmt()
 void SimpleParser::case_stmt()
 {
   eat(TokenType::CASE, "expecting case");
-  eat(TokenType::LPAREN, "expecting lparen");
   if(base_rvalue()) {
     advance();
   }
-  eat(TokenType::RPAREN, "expecting rparen");
   eat(TokenType::COLON, "expecting colon");
-  while (!match({TokenType::RBRACE, TokenType::DEFAULT, TokenType::BREAK, TokenType::CASE}))
+  while (!match({TokenType::RBRACE, TokenType::DEFAULT, TokenType::CASE}))
   {
     stmt();
   }
-  if (match(TokenType::BREAK)) {
-    eat(TokenType::BREAK, "expecting break");
-  }
+  // if (match(TokenType::BREAK)) {
+  //   eat(TokenType::BREAK, "expecting break");
+  // }
 }
 
 void SimpleParser::default_stmt()

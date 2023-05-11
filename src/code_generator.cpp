@@ -377,13 +377,15 @@ void CodeGenerator::visit(SwitchStmt& s) {
     vector<int> jmpf;
 
     s.switch_expr.accept(*this);
-    // store
-    curr_frame.instructions.push_back(VMInstr::STORE(0));
+    var_table.add(s.switch_expr.value.lexeme());
+    curr_frame.instructions.push_back(VMInstr::STORE(var_table.get(s.switch_expr.value.lexeme())));
 
     int counter = 0;
     for(auto b : s.cases) {
       b.const_expr.accept(*this);
-      counter += 2;
+      curr_frame.instructions.push_back(VMInstr::LOAD(var_table.get(s.switch_expr.value.lexeme())));
+      curr_frame.instructions.push_back(VMInstr::CMPEQ());
+      
 
       jmpf.push_back(curr_frame.instructions.size());
       curr_frame.instructions.push_back(VMInstr::JMPF(-1));
@@ -400,7 +402,7 @@ void CodeGenerator::visit(SwitchStmt& s) {
       jmpf.push_back(curr_frame.instructions.size());
       curr_frame.instructions.push_back(VMInstr::NOP());
       curr_frame.instructions.at(jmpf[counter]).set_operand(jmpf[counter + 1]);
-      
+      counter += 2;
     }
 
     for(auto st : s.defaults) {
